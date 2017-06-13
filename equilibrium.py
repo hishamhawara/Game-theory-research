@@ -1,7 +1,9 @@
 import random
 import math
-T = 100 #Number of round
+import matplotlib.pyplot as plt
 
+T = 4 #Number of round
+k = 1
 v1 = [0] + sorted([random.randint(0,2*T) for i in range(T)], reverse = True) #marginal valuation for bidder 1
 v2 = [0] + [T]*(T//2) + sorted([random.randint(0,T-1) for i in range(T//2)], reverse = True) #marginal valuation for bidder 2
 
@@ -15,6 +17,49 @@ for i in range(T + 1):
     vf1[i] = vf1[i-1] + v1[i] #As vf1[-1] = 0, it's ok
     vf2[i] = vf2[i-1] + v2[i] 
 
+def pivot(v1,v2,T):
+    v1 = v1.copy()
+    v2 = v2.copy()
+    v1[0] = 0
+    v2[0] = 0
+    vf1 = [0]*(T+1) #valuation function for bidder 1
+    vf2 = [0]*(T+1) #                   for bidder 2
+
+    for i in range(T + 1):
+        vf1[i] = vf1[i-1] + v1[i] #As vf1[-1] = 0, it's ok
+        vf2[i] = vf2[i-1] + v2[i] 
+
+    profit1 = 0 
+    profitfo  = 0 
+    pivot_price = 0
+
+    profits1 = [0]*(T+1) #marginal valuation for bidder 1
+    profits2 = [0]*(T) #marginal valuation for bidder 1
+
+    profits1[0] = vf1[0]
+    for k in range(1,T+1):
+        profits1[k] = vf1[k] - (k * v2[T+1-k])
+    profit1 = max(profits1)
+    kstar = profits1.index(profit1)
+    print(kstar)
+    print("*********1111*****")
+    print(profit1)
+    print(profits1)
+    print("*********1111****")
+
+    profits2[0] = vf1[0]
+    for k in range(1, T):
+        profits2[k] = (vf1[k+1]-vf1[1]) - k * v2[T-k]
+    profitfo = max(profits2)
+    print("*********222222*********")
+    print(profitfo)
+    print(profits2)
+    print("*********222222*********")
+    #the pivot price calculation
+    pivot_price = v1[1] + profitfo - profit1
+    print("*********pivot price*****")
+    print(pivot_price)
+    print("*********pivot price****")
 
 print(v1,vf1)
 print(v2,vf2)
@@ -74,7 +119,7 @@ for i in range(1,T+1):
     else:
         print("Round",i)
     print("Bids:",bid_1,bid_2,'->',price[i-1])
-    
+    pivot(v1[nb_1:],v2[nb_2:],T-i+1)
     winner = 1*(bid_1 > bid_2) + 2*(bid_1 < bid_2)
     win.append(winner)
     
@@ -100,7 +145,6 @@ print(price)
 print(win)
 print(monopoly,win[monopoly-1:])
 
-import matplotlib.pyplot as plt
 
 plt.plot(price)
 plt.show()

@@ -52,11 +52,11 @@ def pivot(v1,v2,T):
     profitfo  = 0 
     pivot_price = 0
 
-    profits1 = [0]*(T+1) #marginal valuation for bidder 1
-    profits2 = [0]*(T) #marginal valuation for bidder 1
+    profits1 = [0]*(T)
+    profits2 = [0]*(T)
 
     profits1[0] = vf1[0]
-    for k in range(1,T+1):
+    for k in range(1,T):
         profits1[k] = vf1[k] - (k * v2[T+1-k])
     profit1 = max(profits1)
     kstar = profits1.index(profit1)
@@ -79,6 +79,7 @@ def pivot(v1,v2,T):
     print("*********pivot price*****")
     print(pivot_price)
     print("*********pivot price****")
+    return pivot_price
 
 
 def sgpe(vf1,vf2):

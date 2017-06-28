@@ -5,15 +5,20 @@ from tools import *
 
 seed = setseed()
 
-T = 4 #Number of round
+T = 10 #Number of round
 
 #marginal valuation for bidder 1
-v1 = vtype("uniform",T,low_b=0,up_b=2*T)
+v1 = vtype("uniform",T,low_b=T,up_b=2*T)
 #marginal valuation for bidder 2
-v2 = vtype("cst-unif",T,low_b=0,up_b=T,cst_t=T//2)
+v2 = vtype("uniform",T,low_b=T,up_b=2*T)
+for i in range(10,len(v2)):
+    v2[i] -= T*3//4
 
-#v1 = [0,5,4,4,0]
-#v2 = [0,4,4,1,0]
+"""#marginal valuation for bidder 1
+v1 = vtype("custom",T,vals=[T+1]*T)
+#marginal valuation for bidder 2
+v2 = vtype("custom",T,vals=[T]*(T-1)+[0])
+"""
 
 
 #Check that v1/v2 are non-increasing ?
@@ -45,13 +50,14 @@ bid_2 = [0]*T
 monopoly = 0
 win = []
 
-pivot(v1,v2,T)
 
 for i in range(T):
     winner = 0 #winner for round i
 
     bid_1[i] = strat("sgpe", 1, value_1=value_1, value_2=value_2, nb_1=nb_1, nb_2=nb_2)
+    #bid_1[i] = strat("greedy", 1, v1=v1, v2=v2, nb_1=nb_1, nb_2=nb_2, rnd_left=T-i)
     bid_2[i] = strat("sgpe", 2, value_1=value_1, value_2=value_2, nb_1=nb_1, nb_2=nb_2)
+    #bid_2[i] = strat("greedy", 2, v1=v1, v2=v2, nb_1=nb_1, nb_2=nb_2, rnd_left=T-i)
     
     price[i] = min(bid_1[i],bid_2[i])
     
@@ -91,6 +97,8 @@ for i in range(T):
 print("Price:",price)
 print("All winners:",win)
 print("Monopoly from",monopoly,"with results:",win[monopoly:])
+
+pivot(v1,v2,T)
 
 
 graph(bid_1,bid_2,v1,v2)

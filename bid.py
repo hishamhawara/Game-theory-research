@@ -34,27 +34,6 @@ print(v2,vf2)
 #End of inputs (is vf really an input ?)
 
 
-value_1 = [[0 for j in range(T - i + 1)] for i in range(T+1)] #initialization of vectors
-value_2 = [[0 for j in range(T - i + 1)] for i in range(T+1)]
-
-for k1 in range(T + 1): #Initializing the value by the leaves
-    k2 = T - k1
-    value_1[k1][k2] = vf1[k1]
-    value_2[k1][k2] = vf2[k2]
-    # print(k1,k2,value_1[k1][k2],value_2[k1][k2])
-# print("End of depth",T)
-    
-for i in range(T-1,-1,-1): #Applying recursion of internal nodes
-    for k1 in range(i + 1):
-        k2 = i - k1
-        
-        value_1[k1][k2] = max(value_1[k1][k2+1], value_1[k1+1][k2] - (value_2[k1][k2+1] - value_2[k1+1][k2]))
-        value_2[k1][k2] = max(value_2[k1+1][k2], value_2[k1][k2+1] - (value_1[k1+1][k2] - value_1[k1][k2+1]))
-
-        # print(k1,k2,value_1[k1][k2],value_2[k1][k2])
-    # print("End of depth",i)
-    
-
 #Resolution
 
 utility_1 = 0 #Player 1 utility
@@ -73,22 +52,10 @@ for i in range(1,T+1):
     bid_2 = input('player 2 input your bid: ')
     bid_1 = int(bid_1)
     bid_2 = int(bid_2)
-
-
     
     price[i-1] = min(bid_1,bid_2)
     
-    if(v1[nb_1 + 1 + (T - i)] > v2[nb_2 + 1]):#If marginal value are decreasing, check if it is a monopoly
-        if(not monopoly):
-            monopoly = i
-        print("Round",i,"monopoly for player 1")
-        
-    elif (v2[nb_2 + 1 + (T - i)] > v1[nb_1 + 1]): 
-        if(not monopoly):
-            monopoly = i
-        print("Round",i,"monopoly for player 2")
-    else:
-        print("Round",i)
+    print("Round",i)
     print("Bids:",bid_1,bid_2,'->',price[i-1])
     
     winner = 1*(bid_1 > bid_2) + 2*(bid_1 < bid_2)
@@ -115,7 +82,6 @@ for i in range(1,T+1):
     
 print(price)
 print(win)
-print(monopoly,win[monopoly-1:])
 
 import matplotlib.pyplot as plt
 

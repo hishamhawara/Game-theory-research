@@ -40,7 +40,7 @@ for i in range(T+1):
 print(vi)
 print(vfi)
 
-#Resolution
+#Resolutionn
 utility_i = [0]*(number_of_players)
 nb_i = [0]*(number_of_players)
 bid_i = [0]*(number_of_players)

@@ -10,10 +10,7 @@ vi = []
 v1 = [0] + sorted([random.randint(0,2*T) for i in range(T)], reverse = True)
  #marginal valuation for bidder 1
 
-v2 = [0] + [2*T] + sorted([random.randint(0,T-1) for i in range(T-1)], reverse = True)
- #marginal valuation for bidder 2
 
-print(vi)
 for j in range(number_of_players):
 	answer_question1 = input('player' + str(j) + ' do you want to set your marginal values? (Y/N)')
 	if answer_question1 == "Y" :
@@ -25,7 +22,6 @@ for j in range(number_of_players):
 	else:
 		v1 = [0] + sorted([random.randint(0,2*T) for i in range(T)], reverse = True)
 		vi.append(v1)
-#print(vi)
 
 #Check that v1/v2 are non-increasing ?
 vfi = [[] for i in range(number_of_players)] #valuation function for bidder i
@@ -40,7 +36,7 @@ for i in range(T+1):
 print(vi)
 print(vfi)
 
-#Resolutionn
+#Resolution
 utility_i = [0]*(number_of_players)
 nb_i = [0]*(number_of_players)
 bid_i = [0]*(number_of_players)

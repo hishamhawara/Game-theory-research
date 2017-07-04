@@ -127,9 +127,9 @@ def strat(type,bidder,**args):
         
 def graph(bid_1,bid_2,v1,v2):
     plt.figure()
-    plt.plot(bid_1)
-    plt.plot(bid_2)
+    plt.plot(bid_1,'-o')
+    plt.plot(bid_2,'-o')
     plt.figure()
-    plt.plot(v1[1:])
-    plt.plot(v2[1:])
+    plt.plot(range(1,len(v1)),v1[1:],'-d')
+    plt.plot(range(1,len(v2)),v2[1:],'-d')
     plt.show()

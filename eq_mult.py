@@ -44,18 +44,23 @@ def sgpe2(l_vf):
 	nb_p = len(l_vf)
 	value = [0]*(T+1)
 	winner = [0]*(T+1)
+	price_t = [0]*(T+1)
+	bids_t = [0]*(T+1)
 	for i in range(T+1):
 		value[i] = {j:0 for j in init(i,0,l_vf)} #Creation of nodes
 		winner[i] = {j:0 for j in init(i,0,l_vf)} #Creation of nodes	
-	
+		price_t[i] = {j:0 for j in init(i,0,l_vf)}
+		bids_t[i] = {j:0 for j in init(i,0,l_vf)}
 	winner.pop()
+	price_t.pop()
+	bids_t.pop()
 	
 	print("init done")
 	for items in value[T]: #Initialisation of leaves
 		value[T][items] = tuple(l_vf[p][items[p]] for p in range(nb_p))
 		
 	for i in range(T-1,-1,-1): #Number of items sold
-		print(i,"items done")
+		print(i+1,"items done")
 		for items in value[i]:
 			mat = [[0]*nb_p for j in range(nb_p)] #Matrice of marginal gain if p1 wins over p2
 			for p1 in range(nb_p):
@@ -77,16 +82,21 @@ def sgpe2(l_vf):
 			while(price[-1] < max([mat[i][max_index] for i in range(len(mat)) if i != max_index])):
 				price.append(max([mat[i][max_index] for i in range(len(mat)) if i != max_index]))
 				max_index = [mat[i][max_index] for i in range(len(mat))].index(price[-1])
+				init_bid[max_index] = price[-1]
 			
 			next_iter = next_it(items,max_index)
+			if(items == (0,0,0)):
+				print(price, init_bid)
+				print(mat)
 			winner[i][items] = max_index
 			value[i][items] = tuple(value[i+1][next_iter][p] - (p == max_index)*price[-2] for p in range(len(value[i+1][next_iter])))
-
+			price_t[i][items] = price[-2]
+			bids_t[i][items] = init_bid
 	print("values done")
-	return value,winner
+	return value,winner,price_t, bids_t
 
 def game(l_vf,n,T):
-	value,winner = sgpe2(l_vf)
+	value,winner,price_t, bids_t = sgpe2(l_vf)
 	utility = [0]*n
 	
 	price = [0]*T #Price of different items
@@ -100,10 +110,8 @@ def game(l_vf,n,T):
 		print("Round",i+1)
 		win.append(winner[i][nb])
 		
-		bid[i] = [value[i+1][next_it(nb,j)][j] - value[i+1][next_it(nb,win[-1])][j] for j in range(n)]
-		price[i] = max(bid[i])
-		
-		bid[i][win[-1]] = value[i+1][next_it(nb,win[-1])][win[-1]] - value[i+1][next_it(nb,bid[i].index(max(bid[i])))][win[-1]]
+		bid[i] = bids_t[i][nb]
+		price[i] = price_t[i][nb]
 			
 		print("Bids:",*bid[i],'->',price[i])
 		

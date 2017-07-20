@@ -127,78 +127,60 @@ def strat(type,bidder,**args):
         else:
             bid = pivot(v2[nb_2:],v1[nb_1:],rnd_left)
 
-    if(type == "learnR"):
+    if(type == "learnR_a"):
         v, nb, i, rprice = args["v"],args["nb"], args["k"], args["rprice"]
-        if(bidder == 1):
-            perc = 0.8
+        perc = 0.8
+        bid = v[nb+1] * perc
+        while bid < rprice[i]:
+            perc = perc + 0.1
+            bid = v[nb+1] * perc
+
+    if(type == "learnR_b"):
+        v, nb, i, rprice = args["v"],args["nb"], args["k"], args["rprice"]
+        if i < 8:
+            perc = 0.4
             bid = v[nb+1] * perc
             while bid < rprice[i]:
                 perc = perc + 0.1
                 bid = v[nb+1] * perc
         else:
-            if i < 8:
-                perc = 0.4
-                bid = v[nb+1] * perc
-                while bid < rprice[i]:
-                    perc = perc + 0.1
-                    bid = v[nb+1] * perc
-            else:
-                bid = v[nb+1]
-    if(type == "learn"):
+            bid = v[nb+1]
+
+    if(type == "learn_a"):
         v, nb, i = args["v"],args["nb"], args["k"]
-        if(bidder == 1):
-            perc = 0.8
+        perc = 0.8
+        bid = v[nb+1] * perc
+    
+    if(type == "learn_b"):
+        v, nb, i = args["v"],args["nb"], args["k"]
+        if i < 8:
+            perc = 0.4
             bid = v[nb+1] * perc
         else:
-            if i < 8:
-                perc = 0.4
-                bid = v[nb+1] * perc
-            else:
-                bid = v[nb+1]
+            bid = v[nb+1]
 
     if(type == "trial"):
-        v1, v2, nb_1, nb_2, i, bid1, bid2, rprice = args["v1"],args["v2"], args["nb_1"], args["nb_2"], args["k"], args["bid1"], args["bid2"], args["rprice"]
+        v, nb, other_nb, i, your_bid, other_bid, rprice = args["v"], args["nb"], args["other_nb"], args["k"], args["bid"], args["other_bid"], args["rprice"]
         if i < 1:
-            if(bidder == 1):
-                perc = 0.6 
-                bid = v1[nb_1+1] * perc
-                while bid < rprice[i]:
-                    perc = perc + 1
-                    bid = v1[nb_1+1] * perc
-                bid1[i] = bid
-            else:
-                perc = 0.6 
-                bid = v2[nb_2+1] * perc
-                while bid < rprice[i]:
-                    perc = perc + 1
-                    bid = v2[nb_2+1] * perc
-                bid2[i] = bid
-
+            perc = 0.6 
+            bid = v[nb+1] * perc
+            while bid < rprice[i]:
+                perc = perc + 1
+                bid = v[nb+1] * perc
+            your_bid[i] = bid
         else:
-            if(bidder == 1):
-                if (bid1[i-1] > bid2[i-1]):
-                    perc = 0.6
-                    bid = v1[nb_1+1] * perc
-                    while (bid <= bid2[i-1]) and (bid <= v1[nb_1+1]) and (bid < rprice[i]):
-                        perc = perc + 0.1
-                        bid = v1[nb_1+1] * perc
-                    bid1[i] = bid
-
-                else:
-                    bid = v1[nb_1+1]
-                    bid1[i] = bid
+            if (your_bid[i-1] > other_bid[i-1]):
+                perc = 0.6
+                bid = v[nb+1] * perc
+                while (bid <= other_bid[i-1]) and (bid <= v[nb+1]) and (bid < rprice[i]):
+                    perc = perc + 0.1
+                    bid = v[nb+1] * perc
+                your_bid[i] = bid
 
             else:
-                if bid2[i-1] > bid1[i-1]:
-                    perc = 0.6
-                    bid = v2[nb_2+1] * perc
-                    while (bid <= bid1[i-1]) and (bid <= v2[nb_2+1]) and (bid < rprice[i]):
-                        perc = perc + 0.1
-                        bid = v2[nb_2+1] * perc
-                    bid2[i] = bid
-                else:
-                    bid = v2[nb_2+1]
-                    bid2[i] = bid
+                bid = v[nb+1]
+                your_bid[i] = bid
+
     return bid
 
 def learn(v1, v2, T):
@@ -220,3 +202,20 @@ def graph(bid_1,bid_2,v1,v2):
     plt.plot(v1[1:])
     plt.plot(v2[1:])
     plt.show()
+    
+def print_map(tab): #Should be a double map with same keys
+    h_max = max(len(str(h)) for h in tab)
+    h_map = dict()
+    for key in tab:
+        h_map[key] = max(len(str(tab[h][key])) for h in tab)
+        
+        
+    s = "|" + ' '*h_max + '|' + "|".join(' '*(h_map[h] - len(str(h))) + str(h) for h in tab) + '|'
+    print(s)
+    for key in tab:
+        s = '-'*(1+len(tab)+1 + sum(h_map.values()) + h_max)
+        print(s)
+        s = "|" + ' '*(h_max - len(str(key))) + str(key) + '|' + "|".join(' '*(h_map[h] - len(str(tab[key][h]))) + str(tab[key][h]) for h in tab) + '|'
+        print(s)
+    
+    

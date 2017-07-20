@@ -1,8 +1,7 @@
 import sys
 import random
 
-from tools import *
-
+from toolsedit import *
 seed = setseed()
 
 T = 10 #Number of round
@@ -54,13 +53,13 @@ win = []
 
 for i in range(T):
     winner = 0 #winner for round i
-    bid_1[i] = strat("learnR", 1, v=v1,  nb = nb_1, k = i, rprice = rprice)
+    bid_1[i] = strat("learnR_a", 1, v=v1,  nb = nb_1, k = i, rprice = rprice)
     #bid_1[i] = strat("greedy", 1, v1=v1, v2=v2, nb_1=nb_1, nb_2=nb_2, rnd_left=T-i)
-    bid_2[i] = strat("learnR", 2, v=v2,  nb = nb_2, k = i, rprice = rprice)
+    bid_2[i] = strat("learnR_b", 2, v=v2,  nb = nb_2, k = i, rprice = rprice)
     #bid_1[i] = strat("trial", 1, v1=v1, v2=v2, nb_1=nb_1, nb_2 = nb_2, k = i, bid1 = bid_1, bid2 = bid_2, rprice = rprice)
     #bid_2[i] = strat("trial", 2, v1=v1, v2=v2, nb_1=nb_1, nb_2 = nb_2, k = i, bid1 = bid_1, bid2 = bid_2, rprice = rprice)
-    bid_3[i] = strat("learn", 1, v=v1,  nb = nb_1, k = i)
-    bid_4[i] = strat("learn", 2, v=v2,  nb = nb_2, k = i)
+    bid_3[i] = strat("learn_a", 1, v=v1,  nb = nb_1, k = i)
+    bid_4[i] = strat("learn_b", 2, v=v2,  nb = nb_2, k = i)
 
     #bid_2[i] = strat("greedy", 2, v1=v1, v2=v2, nb_1=nb_1, nb_2=nb_2, rnd_left=T-i)
 

@@ -131,7 +131,7 @@ def strat(type,bidder,**args):
         v, nb, i, rprice = args["v"],args["nb"], args["k"], args["rprice"]
         perc = 0.8
         bid = v[nb+1] * perc
-        while bid < rprice[i]:
+        while bid < rprice[i] and perc + 0.1 <= 1.:
             perc = perc + 0.1
             bid = v[nb+1] * perc
 
@@ -165,14 +165,14 @@ def strat(type,bidder,**args):
             perc = 0.6 
             bid = v[nb+1] * perc
             while bid < rprice[i]:
-                perc = perc + 1
+                perc = perc + 0.1
                 bid = v[nb+1] * perc
             your_bid[i] = bid
         else:
             if (your_bid[i-1] > other_bid[i-1]):
                 perc = 0.6
                 bid = v[nb+1] * perc
-                while (bid <= other_bid[i-1]) and (bid <= v[nb+1]) and (bid < rprice[i]):
+                while (bid <= other_bid[i-1]) and (perc + 0.1 <= 1.) and (bid < rprice[i]):
                     perc = perc + 0.1
                     bid = v[nb+1] * perc
                 your_bid[i] = bid
@@ -180,7 +180,11 @@ def strat(type,bidder,**args):
             else:
                 bid = v[nb+1]
                 your_bid[i] = bid
-
+    if(type == "reverse"):
+        v, nb, i, rprice, T, your_bid = args["v"], args["nb"], args["k"], args["rprice"], args["T"], args["bid"]
+        bid = v[nb + T - i]
+        your_bid[i] = bid
+        
     return bid
 
 def learn(v1, v2, T):
@@ -204,18 +208,18 @@ def graph(bid_1,bid_2,v1,v2):
     plt.show()
     
 def print_map(tab): #Should be a double map with same keys
+    print("Printing")
     h_max = max(len(str(h)) for h in tab)
     h_map = dict()
-    for key in tab:
-        h_map[key] = max(len(str(tab[h][key])) for h in tab)
-        
-        
+    for col in tab:
+        h_map[col] = max(max(len(str(int(tab[h][col]*100)/100)) for h in tab),len(str(col)))
+
     s = "|" + ' '*h_max + '|' + "|".join(' '*(h_map[h] - len(str(h))) + str(h) for h in tab) + '|'
     print(s)
-    for key in tab:
+    for row in tab:
         s = '-'*(1+len(tab)+1 + sum(h_map.values()) + h_max)
         print(s)
-        s = "|" + ' '*(h_max - len(str(key))) + str(key) + '|' + "|".join(' '*(h_map[h] - len(str(tab[key][h]))) + str(tab[key][h]) for h in tab) + '|'
+        s = "|" + ' '*(h_max - len(str(row))) + str(row) + '|' + "|".join(' '*(h_map[h] - len(str(int(tab[row][h]*100)/100))) + str(int(tab[row][h]*100)/100) for h in tab) + '|'
         print(s)
     
     

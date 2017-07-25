@@ -105,8 +105,8 @@ def run(T,diff_v,strategies):
         yield result,r,rprice
 
 
-T_list = [5*i for i in range(1,4)] #Number of round
-diff_v = 40 #Number of different valuation
+T_list = [1,2] #Number of round
+diff_v = 4 #Number of different valuation
 
 strategies = ['learn_a','learn_b','learnR_a','learnR_b','trial', 'reverse']
 
@@ -122,9 +122,12 @@ for i in range(len(T_list)):
             print_map(res)
 
 if(len(T_list) > 1):
+    d = {0 : 'no reserve price',1: 'decreasing reserve price', 2: 'constant reserve price', 3: 'increasing reserve price'}
     for r in range(4):
         plt.figure()
         for i in range(len(strategies)):
             plt.plot(T_list,[plot[r][j][i]/((T_list[j]*diff_v)**2) for j in range(len(T_list))], label = strategies[i])
         plt.legend()
+        plt.title(d[r])
         plt.show()
+        

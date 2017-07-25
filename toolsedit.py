@@ -120,31 +120,41 @@ def strat(type,bidder,**args):
             bid = value_2[nb_1][nb_2+1] - value_2[nb_1+1][nb_2]
     
     if(type == "greedy"):
-        v1,v2,nb_1,nb_2, rnd_left = args["v1"], args["v2"],args["nb_1"],args["nb_2"],args["rnd_left"]
-        
+        v,nb, rnd_left = args["v"],args["nb"],args["rnd_left"]
+
         if(bidder == 1):
             bid = pivot(v1[nb_1:],v2[nb_2:],rnd_left)
         else:
             bid = pivot(v2[nb_2:],v1[nb_1:],rnd_left)
 
     if(type == "learnR_a"):
-        v, nb, i, rprice = args["v"],args["nb"], args["k"], args["rprice"]
+        v, nb, i, rprice, T = args["v"],args["nb"], args["k"], args["rprice"], args["T"]
         perc = 0.8
         bid = v[nb+1] * perc
-        while bid < rprice[i] and perc + 0.1 <= 1.:
+        while (bid < rprice[i]) and (bid <= v[nb+1]):
             perc = perc + 0.1
             bid = v[nb+1] * perc
 
     if(type == "learnR_b"):
-        v, nb, i, rprice = args["v"],args["nb"], args["k"], args["rprice"]
-        if i < 8:
+        v, nb, i, rprice, T = args["v"],args["nb"], args["k"], args["rprice"], args["T"]
+        if i < (0.8*T):
             perc = 0.4
             bid = v[nb+1] * perc
-            while bid < rprice[i]:
+            while (bid < rprice[i]) and (bid <= v[nb+1]):
                 perc = perc + 0.1
                 bid = v[nb+1] * perc
         else:
             bid = v[nb+1]
+    if(type == "learnR_c"):
+        v, nb, i, rprice, T = args["v"],args["nb"], args["k"], args["rprice"], args["T"]
+        if i < (0.2*T):
+            bid = v[nb+1]
+        else:
+            perc = 0.4
+            bid = v[nb+1] * perc
+            while (bid < rprice[i]) and (bid <= v[nb+1]):
+                perc = perc + 0.1
+                bid = v[nb+1] * perc
 
     if(type == "learn_a"):
         v, nb, i = args["v"],args["nb"], args["k"]
@@ -152,27 +162,35 @@ def strat(type,bidder,**args):
         bid = v[nb+1] * perc
     
     if(type == "learn_b"):
-        v, nb, i = args["v"],args["nb"], args["k"]
-        if i < 8:
+        v, nb, i, T = args["v"],args["nb"], args["k"], args["T"]
+        if i < (0.8*T):
             perc = 0.4
             bid = v[nb+1] * perc
         else:
             bid = v[nb+1]
+
+    if(type == "learn_c"):
+        v, nb, i, T = args["v"],args["nb"], args["k"], args["T"]
+        if i < (0.2*T):
+            bid = v[nb+1]
+        else:
+            perc = 0.4
+            bid = v[nb+1] * perc
 
     if(type == "trial"):
         v, nb, other_nb, i, your_bid, other_bid, rprice = args["v"], args["nb"], args["other_nb"], args["k"], args["bid"], args["other_bid"], args["rprice"]
         if i < 1:
             perc = 0.6 
             bid = v[nb+1] * perc
-            while bid < rprice[i]:
-                perc = perc + 0.1
+            while (bid < rprice[i]) and (bid <= v[nb+1]):
+                perc = perc + 1
                 bid = v[nb+1] * perc
             your_bid[i] = bid
         else:
             if (your_bid[i-1] > other_bid[i-1]):
-                perc = 0.6
+                perc = 0.6  
                 bid = v[nb+1] * perc
-                while (bid <= other_bid[i-1]) and (perc + 0.1 <= 1.) and (bid < rprice[i]):
+                while (bid <= other_bid[i-1]) and (bid <= v[nb+1]) and (bid < rprice[i]):
                     perc = perc + 0.1
                     bid = v[nb+1] * perc
                 your_bid[i] = bid
@@ -180,11 +198,7 @@ def strat(type,bidder,**args):
             else:
                 bid = v[nb+1]
                 your_bid[i] = bid
-    if(type == "reverse"):
-        v, nb, i, rprice, T, your_bid = args["v"], args["nb"], args["k"], args["rprice"], args["T"], args["bid"]
-        bid = v[nb + T - i]
-        your_bid[i] = bid
-        
+
     return bid
 
 def learn(v1, v2, T):
@@ -208,18 +222,16 @@ def graph(bid_1,bid_2,v1,v2):
     plt.show()
     
 def print_map(tab): #Should be a double map with same keys
-    print("Printing")
     h_max = max(len(str(h)) for h in tab)
     h_map = dict()
-    for col in tab:
-        h_map[col] = max(max(len(str(int(tab[h][col]*100)/100)) for h in tab),len(str(col)))
-
+    for key in tab:
+        h_map[key] = max(len(str(tab[h][key])) for h in tab)
+        
+        
     s = "|" + ' '*h_max + '|' + "|".join(' '*(h_map[h] - len(str(h))) + str(h) for h in tab) + '|'
     print(s)
-    for row in tab:
+    for key in tab:
         s = '-'*(1+len(tab)+1 + sum(h_map.values()) + h_max)
         print(s)
-        s = "|" + ' '*(h_max - len(str(row))) + str(row) + '|' + "|".join(' '*(h_map[h] - len(str(int(tab[row][h]*100)/100))) + str(int(tab[row][h]*100)/100) for h in tab) + '|'
+        s = "|" + ' '*(h_max - len(str(key))) + str(key) + '|' + "|".join(' '*(h_map[h] - len(str(tab[key][h]))) + str(tab[key][h]) for h in tab) + '|'
         print(s)
-    
-    
